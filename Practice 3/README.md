@@ -1,0 +1,5 @@
+# Practice 3
+
+Python Functions and Object-Oriented Programming
+
+Author: Aidar Sharifulla
