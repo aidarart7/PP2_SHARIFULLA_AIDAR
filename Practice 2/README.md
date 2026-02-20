@@ -1,4 +1,4 @@
-#Practice 02
+# Practice 2
 
 Python Control Flow Basics
 
