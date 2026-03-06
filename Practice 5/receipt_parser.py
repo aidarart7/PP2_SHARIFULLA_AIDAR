@@ -1,52 +1,41 @@
 import re
+import textwrap
 
-with open(r"C:\Users\LENOVO\Documents\PP2\Practice 5\raw.txt", "r", encoding="utf-8") as f:
+with open("raw.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
-print("TEXT LOADED\n")
+matches = re.findall(
+    r"\d+\.\n(.+?)\n([\d,]+)\s*x\s*([\d\s,]+)\n([\d\s,]+)\nСтоимость",
+    text,
+    re.DOTALL
+)
+datetime = re.search(r"\d{2}\.\d{2}\.\d{4}\s\d{2}:\d{2}:\d{2}", text)
 
-p1 = r"ab*"
-print("1:", re.findall(p1, text))
+payment = re.search(r"(Банковская карта|Наличные|Card|Cash)", text)
 
+total = 0
+line_width = 80
+name_width = 50
 
-p2 = r"ab{2,3}"
-print("2:", re.findall(p2, text))
+print(f"{'PRODUCT':<{name_width}} {'AMOUNT x PRICE = TOTAL'}")
+print("-"*line_width)
 
+for item in matches:
+    name = item[0].strip()
+    amount = item[1].replace(",", ".")
+    price = item[2].replace(" ", "")
+    total_price = item[3].replace(" ", "").replace(",", ".")
+    total += float(total_price)
 
-p3 = r"[a-z]+_[a-z]+"
-print("3:", re.findall(p3, text))
+    wrapped_name = textwrap.wrap(name, width=name_width)
+    for i, line in enumerate(wrapped_name):
+        if i == 0:
+            print(f"{line:<{name_width}} {amount} x {price} = {total_price}")
+        else:
+            print(f"{line:<{name_width}}")
 
+print("-"*line_width)
+print(f"{'TOTAL':<{name_width}} {round(total,2)}\n")
 
-p4 = r"[A-Z][a-z]+"
-print("4:", re.findall(p4, text))
-
-
-p5 = r"a.*b"
-print("5:", re.findall(p5, text))
-
-
-r6 = re.sub(r"[ ,\.]", ":", text)
-print("\n6 (first 200 chars):")
-print(r6[:200])
-
-
-def snake_to_camel(match):
-    return match.group(1).upper()
-
-r7 = re.sub(r"_([a-z])", snake_to_camel, text)
-print("\n7 (first 200 chars):")
-print(r7[:200])
-
-
-r8 = re.findall(r"[A-Z][^A-Z]*", text)
-print("\n8:", r8[:10])
-
-
-r9 = re.sub(r"([A-Z])", r" \1", text)
-print("\n9 (first 200 chars):")
-print(r9[:200])
-
-
-r10 = re.sub(r"([A-Z])", r"_\1", text).lower()
-print("\n10 (first 200 chars):")
-print(r10[:200])
+print("DateTime:", datetime.group() if datetime else "Not found")
+print("Payment:", payment.group() if payment else "Not found")
